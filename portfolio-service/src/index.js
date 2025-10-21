@@ -100,13 +100,42 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    service: 'portfolio-service',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connectivity
+    const dbResult = await pool.query('SELECT 1 as health_check');
+    const dbHealthy = dbResult.rows && dbResult.rows.length > 0;
+    
+    // Check Redis connectivity  
+    const redisResult = await redisClient.ping();
+    const redisHealthy = redisResult === 'PONG';
+    
+    const overallHealthy = dbHealthy && redisHealthy;
+    
+    res.status(overallHealthy ? 200 : 503).json({
+      status: overallHealthy ? 'healthy' : 'unhealthy',
+      service: 'portfolio-service',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      dependencies: {
+        database: dbHealthy ? 'connected' : 'disconnected',
+        redis: redisHealthy ? 'connected' : 'disconnected'
+      }
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      service: 'portfolio-service',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      error: error.message,
+      dependencies: {
+        database: 'disconnected',
+        redis: 'disconnected'
+      }
+    });
+  }
 });
 
 // Add ticker to portfolio

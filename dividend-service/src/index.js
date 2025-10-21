@@ -55,7 +55,50 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connectivity
+    const dbResult = await pool.query('SELECT 1 as health_check');
+    const dbHealthy = dbResult.rows && dbResult.rows.length > 0;
+    
+    // Check Redis connectivity  
+    const redisResult = await redisClient.ping();
+    const redisHealthy = redisResult === 'PONG';
+    
+    const overallHealthy = dbHealthy && redisHealthy;
+    
+    res.status(overallHealthy ? 200 : 503).json({
+      status: overallHealthy ? 'healthy' : 'unhealthy',
+      service: 'dividend-service',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      apiKeyConfigured: !!process.env.ALPHA_VANTAGE_API_KEY,
+      mvpMode: process.env.MVP_MODE === 'true',
+      dependencies: {
+        database: dbHealthy ? 'connected' : 'disconnected',
+        redis: redisHealthy ? 'connected' : 'disconnected'
+      }
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      service: 'dividend-service',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      error: error.message,
+      apiKeyConfigured: !!process.env.ALPHA_VANTAGE_API_KEY,
+      mvpMode: process.env.MVP_MODE === 'true',
+      dependencies: {
+        database: 'disconnected',
+        redis: 'disconnected'
+      }
+    });
+  }
+});
+
+// Health check endpoint for API route
+app.get('/api/dividends/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     service: 'dividend-service',

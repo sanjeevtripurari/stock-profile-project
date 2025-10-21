@@ -16,7 +16,7 @@ print_status() {
     local status=$2
     local url=$3
     
-    if [ "$status" = "healthy" ]; then
+    if [ "$status" = "healthy" ] || [ "$status" = "reachable" ] || [[ "$status" == *"enabled"* ]]; then
         echo -e "✅ ${GREEN}$service${NC}: $status"
     else
         echo -e "❌ ${RED}$service${NC}: $status"
@@ -50,6 +50,14 @@ if curl -s -f http://localhost/health > /dev/null 2>&1; then
 else
     print_status "NGINX Proxy" "unhealthy" "http://localhost/health"
     nginx_healthy=false
+fi
+
+# Check unified API health endpoint
+if curl -s -f http://localhost/api/health > /dev/null 2>&1; then
+    print_status "API Gateway" "healthy" "http://localhost/api/health"
+else
+    print_status "API Gateway" "unhealthy" "http://localhost/api/health"
+    all_healthy=false
 fi
 
 # Check individual services through NGINX proxy
@@ -115,11 +123,19 @@ echo ""
 
 # Network connectivity test
 echo -e "${BLUE}🌐 Network Connectivity:${NC}"
-if curl -s -f https://www.alphavantage.co > /dev/null 2>&1; then
-    print_status "Alpha Vantage API" "reachable"
+
+# Check MVP mode first
+if grep -q "MVP_MODE=true" .env 2>/dev/null; then
+    print_status "MVP Mode" "enabled (using mock data)"
+    echo -e "   ${BLUE}ℹ️  External API connectivity not required in MVP mode${NC}"
 else
-    print_status "Alpha Vantage API" "unreachable"
-    echo -e "   ${YELLOW}Warning: Market data may not work${NC}"
+    if curl -s -f https://www.alphavantage.co > /dev/null 2>&1; then
+        print_status "Alpha Vantage API" "reachable"
+    else
+        print_status "Alpha Vantage API" "unreachable"
+        echo -e "   ${YELLOW}Warning: Market data may not work without MVP mode${NC}"
+        all_healthy=false
+    fi
 fi
 
 echo ""

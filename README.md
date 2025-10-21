@@ -623,8 +623,36 @@ The system includes an MVP mode that allows it to work without external API depe
 - When API keys are not available
 
 ### Enabling MVP Mode
-Set `MVP_MODE=true` in your `.env` file:
 
+**Option 1: Using Make Commands**
+```bash
+# Check current status
+make mvp-status
+
+# Enable MVP mode
+make mvp-on
+
+# Enable MVP mode and restart services
+make mvp-enable
+
+# Disable MVP mode
+make mvp-off
+
+# Disable MVP mode and restart services
+make mvp-disable
+```
+
+**Option 2: Using Scripts**
+```bash
+# Linux/Mac
+./mvp-mode.sh enable
+
+# Windows PowerShell
+.\mvp-mode.ps1 enable
+```
+
+**Option 3: Manual Configuration**
+Set `MVP_MODE=true` in your `.env` file:
 ```bash
 # MVP Mode - Set to 'true' to use mock data instead of real market APIs
 MVP_MODE=true

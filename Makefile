@@ -31,6 +31,13 @@ help:
 	@echo "  make debug          - Debug system issues"
 	@echo "  make logs-all       - Show all service logs"
 	@echo "  make clean-rebuild  - Clean rebuild everything"
+	@echo ""
+	@echo "MVP Mode Management:"
+	@echo "  make mvp-status     - Check MVP mode status"
+	@echo "  make mvp-on         - Enable MVP mode (mock data)"
+	@echo "  make mvp-off        - Disable MVP mode (real APIs)"
+	@echo "  make mvp-enable     - Enable MVP + restart services"
+	@echo "  make mvp-disable    - Disable MVP + restart services"
 
 # Initial setup
 setup:
@@ -166,16 +173,19 @@ logs-postgres:
 	@docker logs -f stock-portfolio-postgres
 
 logs-redis:
-	@docker logs -f stock-portfolio-redis# Te
-st MVP mode functionality
+	@docker logs -f stock-portfolio-redis
+
+# Test MVP mode functionality
 test-mvp:
 	@echo "🧪 Testing MVP Mode functionality..."
-	@./scripts/test-mvp-mode.sh# Test
- complete backend API
+	@./scripts/test-mvp-mode.sh
+
+# Test complete backend API
 test-backend:
 	@echo "🧪 Testing complete backend API..."
-	@./test-backend-complete.sh# Debug sys
-tem issues
+	@./test-backend-complete.sh
+
+# Debug system issues
 debug:
 	@echo "🔍 Running system debug..."
 	@./debug-system.sh
@@ -191,3 +201,45 @@ clean-rebuild:
 	@docker-compose down -v
 	@docker-compose build --no-cache
 	@docker-compose up -d
+
+# MVP Mode Management
+mvp-on:
+	@echo "🎯 Enabling MVP Mode (mock data)..."
+	@sed -i 's/MVP_MODE=false/MVP_MODE=true/g' .env || sed -i 's/MVP_MODE=.*/MVP_MODE=true/g' .env
+	@echo "✅ MVP Mode enabled"
+	@echo "ℹ️  System will use mock data instead of real APIs"
+	@echo "🔄 Restart services: make restart"
+
+mvp-off:
+	@echo "🎯 Disabling MVP Mode (real API data)..."
+	@sed -i 's/MVP_MODE=true/MVP_MODE=false/g' .env || sed -i 's/MVP_MODE=.*/MVP_MODE=false/g' .env
+	@echo "✅ MVP Mode disabled"
+	@echo "ℹ️  System will use real Alpha Vantage API"
+	@echo "⚠️  Make sure ALPHA_VANTAGE_API_KEY is set in .env"
+	@echo "🔄 Restart services: make restart"
+
+mvp-status:
+	@echo "🎯 MVP Mode Status:"
+	@if grep -q "MVP_MODE=true" .env 2>/dev/null; then \
+		echo "✅ MVP Mode: ENABLED (using mock data)"; \
+	elif grep -q "MVP_MODE=false" .env 2>/dev/null; then \
+		echo "❌ MVP Mode: DISABLED (using real APIs)"; \
+	else \
+		echo "⚠️  MVP Mode: NOT SET (defaulting to real APIs)"; \
+	fi
+	@echo ""
+	@echo "Commands:"
+	@echo "  make mvp-on     - Enable MVP mode"
+	@echo "  make mvp-off    - Disable MVP mode"
+	@echo "  make mvp-status - Check current status"
+
+# Quick MVP setup and restart
+mvp-enable:
+	@make mvp-on
+	@make restart
+	@echo "🚀 MVP Mode enabled and services restarted!"
+
+mvp-disable:
+	@make mvp-off
+	@make restart
+	@echo "🚀 MVP Mode disabled and services restarted!"
