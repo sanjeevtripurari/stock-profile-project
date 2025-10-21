@@ -36,8 +36,8 @@ Frontend (React) → NGINX Proxy → Microservices → PostgreSQL/Redis
 
 ### 1. Clone & Configure
 ```bash
-git clone <your-repo-url>
-cd stock-portfolio
+git clone https://github.com/sanjeevtripurari/stock-profile-project.git
+cd stock-profile-project
 cp .env.example .env
 nano .env  # Add your API key and secure passwords
 ```
@@ -106,8 +106,8 @@ ssh -i your-key.pem ubuntu@<EC2-PUBLIC-IP>
 ### 3. Deploy Application
 ```bash
 # Clone repository
-git clone <your-repo-url> ~/stock-portfolio
-cd ~/stock-portfolio
+git clone https://github.com/sanjeevtripurari/stock-profile-project.git ~/stock-profile-project
+cd ~/stock-profile-project
 
 # Configure environment
 cp .env.example .env
@@ -981,7 +981,7 @@ curl -o ec2-setup.sh https://raw.githubusercontent.com/<your-repo>/main/deploy/e
 chmod +x ec2-setup.sh && ./ec2-setup.sh
 
 # 2. Deploy application (after logout/login)
-git clone <your-repo> ~/stock-portfolio && cd ~/stock-portfolio
+git clone https://github.com/sanjeevtripurari/stock-profile-project.git ~/stock-profile-project && cd ~/stock-profile-project
 cp .env.example .env && nano .env  # Configure
 make setup && make start
 ```

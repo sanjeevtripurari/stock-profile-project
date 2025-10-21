@@ -427,7 +427,7 @@ fi
 print_step "Setting up SSL certificate auto-renewal..."
 
 # Create renewal script
-cat > ~/stock-portfolio/renew-ssl.sh << EOF
+cat > ~/stock-profile-project/renew-ssl.sh << EOF
 #!/bin/bash
 # SSL certificate renewal script
 
@@ -450,7 +450,7 @@ docker-compose -f /home/$USER/stock-portfolio/docker-compose.yml start nginx-pro
 echo "SSL renewal check completed"
 EOF
 
-chmod +x ~/stock-portfolio/renew-ssl.sh
+chmod +x ~/stock-profile-project/renew-ssl.sh
 
 # Add to cron for automatic renewal
 (crontab -l 2>/dev/null; echo "0 3 * * 0 /home/$USER/stock-portfolio/renew-ssl.sh >> /home/$USER/stock-portfolio/logs/ssl-renewal.log 2>&1") | crontab -

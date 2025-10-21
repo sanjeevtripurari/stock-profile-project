@@ -11,8 +11,8 @@ Get your Stock Portfolio Management System running in 5 minutes!
 ## Step 1: Clone and Setup
 
 ```bash
-git clone <your-repo-url>
-cd stock-portfolio
+git clone https://github.com/sanjeevtripurari/stock-profile-project.git
+cd stock-profile-project
 cp .env.example .env
 ```
 
@@ -168,8 +168,8 @@ exit
 ssh -i your-key.pem ubuntu@<EC2-IP>
 
 # Clone and deploy
-git clone <your-repo> ~/stock-portfolio
-cd ~/stock-portfolio
+git clone https://github.com/sanjeevtripurari/stock-profile-project.git ~/stock-profile-project
+cd ~/stock-profile-project
 cp .env.example .env
 nano .env  # Configure production values
 make setup && make start

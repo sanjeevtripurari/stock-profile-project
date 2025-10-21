@@ -111,9 +111,9 @@ print_info "Firewall configured"
 
 # Create application directory
 print_info "Creating application directory..."
-mkdir -p ~/stock-portfolio
-mkdir -p ~/stock-portfolio/backups
-mkdir -p ~/stock-portfolio/logs
+mkdir -p ~/stock-profile-project
+mkdir -p ~/stock-profile-project/backups
+mkdir -p ~/stock-profile-project/logs
 
 # Create systemd service for automatic startup
 print_info "Creating systemd service..."
@@ -161,7 +161,7 @@ print_info "Log rotation configured"
 
 # Create monitoring script
 print_info "Creating monitoring scripts..."
-cat > ~/stock-portfolio/monitor.sh <<'MONITOREOF'
+cat > ~/stock-profile-project/monitor.sh <<'MONITOREOF'
 #!/bin/bash
 # Quick monitoring script
 
@@ -190,10 +190,10 @@ curl -s http://localhost/api/market/health 2>/dev/null && echo "✓ Market Data 
 curl -s http://localhost/api/dividends/health 2>/dev/null && echo "✓ Dividend Service" || echo "✗ Dividend Service"
 MONITOREOF
 
-chmod +x ~/stock-portfolio/monitor.sh
+chmod +x ~/stock-profile-project/monitor.sh
 
 # Create backup script
-cat > ~/stock-portfolio/backup.sh <<'BACKUPEOF'
+cat > ~/stock-profile-project/backup.sh <<'BACKUPEOF'
 #!/bin/bash
 # Automated backup script
 
@@ -243,7 +243,7 @@ echo "Files created:"
 ls -la $BACKUP_DIR/*$DATE*
 BACKUPEOF
 
-chmod +x ~/stock-portfolio/backup.sh
+chmod +x ~/stock-profile-project/backup.sh
 
 # Setup cron jobs
 print_info "Setting up cron jobs..."
@@ -264,14 +264,14 @@ print_warn "IMPORTANT: You need to log out and log back in for Docker group chan
 echo ""
 print_info "Next steps:"
 echo "  1. Log out and log back in"
-echo "  2. Clone your repository: git clone <your-repo-url> ~/stock-portfolio"
+echo "  2. Clone your repository: git clone https://github.com/sanjeevtripurari/stock-profile-project.git ~/stock-profile-project"
 echo "  3. Create .env file with your configuration"
-echo "  4. Run: cd ~/stock-portfolio && ./deploy/base-setup.sh"
+echo "  4. Run: cd ~/stock-profile-project && ./deploy/base-setup.sh"
 echo "  5. Deploy services: make start"
 echo ""
 print_info "Useful commands:"
-echo "  - Monitor system: ~/stock-portfolio/monitor.sh"
-echo "  - Manual backup: ~/stock-portfolio/backup.sh"
+echo "  - Monitor system: ~/stock-profile-project/monitor.sh"
+echo "  - Manual backup: ~/stock-profile-project/backup.sh"
 echo "  - View logs: make logs"
 echo "  - Check health: make health"
 echo ""
