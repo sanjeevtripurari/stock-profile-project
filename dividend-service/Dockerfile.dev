@@ -1,0 +1,20 @@
+FROM node:18-alpine
+
+# Install curl for health checks and nodemon for development
+RUN apk add --no-cache curl
+RUN npm install -g nodemon
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev)
+RUN npm install
+
+# Copy source code
+COPY . .
+
+EXPOSE 3004
+
+CMD ["npm", "run", "dev"]

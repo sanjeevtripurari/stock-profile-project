@@ -1,0 +1,76 @@
+version: '3.8'
+
+# Development overrides for hot reload and debugging
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./user-service/src:/app/src
+      - ./user-service/package.json:/app/package.json
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    ports:
+      - "3001:3001"  # Expose for direct access in dev
+
+  portfolio-service:
+    build:
+      context: ./portfolio-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./portfolio-service/src:/app/src
+      - ./portfolio-service/package.json:/app/package.json
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    ports:
+      - "3002:3002"  # Expose for direct access in dev
+
+  market-data-service:
+    build:
+      context: ./market-data-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./market-data-service/src:/app/src
+      - ./market-data-service/package.json:/app/package.json
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    ports:
+      - "3003:3003"  # Expose for direct access in dev
+
+  dividend-service:
+    build:
+      context: ./dividend-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./dividend-service/src:/app/src
+      - ./dividend-service/package.json:/app/package.json
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    ports:
+      - "3004:3004"  # Expose for direct access in dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+    environment:
+      NODE_ENV: development
+      REACT_APP_API_URL: http://localhost:3000/api
+    command: npm start
+    ports:
+      - "3005:3000"  # React dev server
+
+  nginx-proxy:
+    ports:
+      - "3000:80"  # API Gateway on port 3000 in dev
